@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting visualizer</title>
+    <link rel = "stylesheet" href=" {{ url_for('static' , filename = 'style.css') }} " >
+</head>
+<body>
+    <h1 class="head" > Bubble Sorting Visualizer</h1>
+    <button class="sortbutton" id="sortbutton" onclick="startsort()">Sort!</button>
+    <div class="graph" id = "graph">
+        {% for val in arr %}
+        <div class="bar" style="height: {{val}}px ;">
+        </div>
+        {% endfor %}
+    </div>
+    <script>
+        async function startsort() {
+            
+            let sortbutton = document.getElementById('sortbutton');
+            sortbutton.disabled = true;
+
+            let response = await fetch('/get_array');
+            let arr = await response.json();
+            let container = document.getElementById('graph');
+            container.innerHTML = ''
+
+            arr.forEach(val => {
+
+                let bar = document.createElement('div');
+                bar.className = 'bar'
+                bar.style.height = `${val}px`;
+                container.appendChild(bar);    
+            });
+
+            let length = arr.length
+            for (let i = 0 ; i<length ; i++){
+                for (let j = 0 ; j < length - 1 - i ; j++){
+                    if (arr[j] > arr[j+1]){
+                        [arr[j] , arr[j+1]] = [arr[j+1],arr[j]];
+                        let bars = container.children;
+                        bars[j].style.height = `${arr[j]}px`;
+                        bars[j+1].style.height = `${arr[j+1]}px`;
+                        await new Promise(resolve => setTimeout(resolve,3))
+                    }
+                }
+            }
+            
+            sortbutton.disabled = false;
+        }
+    </script>
+    
+
+</body>
+</html>
